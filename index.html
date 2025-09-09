@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskAfrika - Modern Task Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.45/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="container nav-container">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <span>TaskAfrika</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="#">Home</a>
+                    <a href="#">Features</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">About</a>
+                    <a href="#">Contact</a>
+                </nav>
+                <div class="nav-actions">
+                    <div class="theme-toggle" @click="toggleTheme">
+                        <div class="theme-toggle-handle"></div>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Sign Up
+                    </button>
+                    <button class="mobile-menu-btn" @click="toggleMobileNav">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-nav" :class="{ open: mobileNavOpen }">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <span>TaskAfrika</span>
+                </div>
+                <button class="close-menu" @click="toggleMobileNav">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="#"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-star"></i> Features</a>
+                <a href="#"><i class="fas fa-tag"></i> Pricing</a>
+                <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+            <div class="mobile-nav-actions">
+                <button class="btn btn-primary" style="width: 100%">
+                    <i class="fas fa-user-plus"></i>
+                    Sign Up
+                </button>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="container hero-content">
+                <h1>Organize Your Work The African Way</h1>
+                <p>TaskAfrika helps you manage tasks and projects with a sleek, intuitive interface designed for the modern African professional.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Get Started
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-video"></i>
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            <div class="graphic-element circle-1"></div>
+            <div class="graphic-element circle-2"></div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.dashboard }">Your <span>Productivity</span> Dashboard</h2>
+            <div class="dashboard" :class="{ visible: sectionVisible.dashboard }">
+                <div class="dashboard-header">
+                    <h3 class="dashboard-title">My Tasks</h3>
+                    <div class="dashboard-tabs">
+                        <div class="tab" :class="{ active: activeTab === 'daily' }" @click="activeTab = 'daily'">Daily</div>
+                        <div class="tab" :class="{ active: activeTab === 'weekly' }" @click="activeTab = 'weekly'">Weekly</div>
+                        <div class="tab" :class="{ active: activeTab === 'monthly' }" @click="activeTab = 'monthly'">Monthly</div>
+                    </div>
+                </div>
+                <div class="kanban-board">
+                    <div class="kanban-column" v-for="column in columns" :key="column.title">
+                        <h4>
+                            {{ column.title }}
+                            <span class="column-count">{{ column.tasks.length }}</span>
+                        </h4>
+                        <div class="task-card" v-for="task in column.tasks" :key="task.title" @click="moveTask(task)">
+                            <h5>{{ task.title }}</h5>
+                            <p>{{ task.description }}</p>
+                            <div class="task-meta">
+                                <span><i class="far fa-clock"></i> {{ task.due }}</span>
+                                <span class="task-priority" :class="'priority-' + task.priority">
+                                    <i class="fas" :class="priorityIcons[task.priority]"></i>
+                                    {{ task.priority }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.features }">African Market <span>Features</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in africanFeatures" :key="item.title" :class="{ visible: sectionVisible.features }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-methods">
+                <div class="payment-method" v-for="method in paymentMethods" :key="method.name">
+                    <div class="payment-method-icon">
+                        <i :class="method.icon"></i>
+                    </div>
+                    <span>{{ method.name }}</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.productivity }">Productivity <span>Boosters</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in productivityFeatures" :key="item.title" :class="{ visible: sectionVisible.productivity }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.collaboration }">Collaboration <span>& Social</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in collaborationFeatures" :key="item.title" :class="{ visible: sectionVisible.collaboration }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="proverb-section">
+                <p class="proverb-text">{{ currentProverb.text }}</p>
+                <p class="proverb-origin">- {{ currentProverb.origin }}</p>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.gamification }">Gamification <span>& Engagement</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in gamificationFeatures" :key="item.title" :class="{ visible: sectionVisible.gamification }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.mobile }">Mobile <span>& Utility Features</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in mobileFeatures" :key="item.title" :class="{ visible: sectionVisible.mobile }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title" :class="{ visible: sectionVisible.smart }">Smart <span>& Assistive Features</span></h2>
+            
+            <div class="features-grid">
+                <div class="feature-item" v-for="(item, index) in smartFeatures" :key="item.title" :class="{ visible: sectionVisible.smart }" :style="`transition-delay: ${index * 0.1}s`">
+                    <div class="feature-item-icon">
+                        <i :class="item.icon"></i>
+                    </div>
+                    <div class="feature-item-content">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h3>TaskAfrika</h3>
+                        <p>Modern task management designed for the African audience.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Product</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Features</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Pricing</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Templates</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Integrations</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Resources</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Blog</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Webinars</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Documentation</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Community</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Company</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-angle-right"></i> About Us</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Careers</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Contact</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Partners</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2023 TaskAfrika. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <div class="demo-container">
+            <button class="demo-btn" @click="showConfetti">
+                <i class="fas fa-bolt"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
